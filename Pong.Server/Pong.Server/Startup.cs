@@ -44,6 +44,7 @@ namespace Pong.Server
                 //});
                 options.AddPolicy("CorsPolicy", builder => builder
                         .WithOrigins("http://localhost:3000")
+                        .WithOrigins("http://localhost:3005")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());

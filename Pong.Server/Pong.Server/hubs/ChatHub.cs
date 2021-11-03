@@ -6,7 +6,7 @@ namespace Pong.Server.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(ChatMessage message)
+        public async Task SendMessage(ChatHub message)
         {
             await Clients.All.SendAsync("ReceiveMessage", message);
         }

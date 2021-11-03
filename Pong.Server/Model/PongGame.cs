@@ -15,5 +15,8 @@ namespace Model
         public int BalX { get; set; }
         public int BalY { get; set; }
 
+        public bool GameStarted { get; set; }
+        public string GroupName { get; set; }
+
     }
 }
