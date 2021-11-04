@@ -10,10 +10,10 @@ namespace DAL
 {
     public class GameDAL
     {
-        public List<PongGame> GetGames()
+        public List<PongGameDB> GetGames()
         {
             //get game info from database
-            List<PongGame> pongGames = new List<PongGame>();
+            List<PongGameDB> pongGames = new List<PongGameDB>();
 
             string query = "SELECT * FROM `game` ";
 
@@ -25,18 +25,29 @@ namespace DAL
                 MySqlDataReader reader = command.ExecuteReader();
                 try
                 {
-                    //while (reader.Read())
-                    //{
-                    //    PongGame machinedata = new PongGame()
-                    //    {
-                    //        Id = reader.GetInt32("id"),
-                    //        TimeStamp = reader.GetDateTime("timestamp"),
-                    //        ShortTime = reader.GetDouble("shot_time")
-                    //    };
-                    //    pongGames.Add(machinedata);
-                    //}
+                    while (reader.Read())
+                    {
+                        PongGameDB pongGame = new PongGameDB()
+                        {
+                            Id = reader.GetInt32("id"),
+                            GameId = reader.GetString("gameId"),
+                            CreationDate = reader.GetDateTime("creationDate")
+                        };
 
-                    //return monitoringsdata;
+                        if (!reader.IsDBNull(reader.GetOrdinal("player1Id")))
+                        {
+                            pongGame.Player1Id = reader.GetString("player1Id");
+                        }
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("player2Id")))
+                        {
+                            pongGame.Player1Id = reader.GetString("player2Id");
+                        }
+
+                        pongGames.Add(pongGame);
+                    }
+
+                    return pongGames;
                 }
                 catch
                 {
@@ -47,10 +58,10 @@ namespace DAL
                     connection.Close();
                 }
             }
-            return new List<PongGame>();
+            return new List<PongGameDB>();
         }
 
-        public List<PongGame> CreateGame(string gameName)
+        public List<PongGameDB> CreateGame(string gameName)
         {
             //create new game in database
 
@@ -61,8 +72,8 @@ namespace DAL
             {
                 connection.Open();
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.Add(new MySqlParameter("@value", gameName));
-                command.Parameters.Add(new MySqlParameter("@total", DateTime.Now));
+                command.Parameters.Add(new MySqlParameter("@gameId", gameName));
+                command.Parameters.Add(new MySqlParameter("@creationDate", DateTime.Now));
                 MySqlDataReader reader = command.ExecuteReader();
                 try
                 {
@@ -84,7 +95,7 @@ namespace DAL
         {
             string query = "";
             //add a user to the game
-            if(playerType == 1)
+            if (playerType == 1)
             {
                 query = "UPDATE `game` SET `player1Id`='@userId' WHERE `gameId` = @gameId";
             }

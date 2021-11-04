@@ -46,25 +46,28 @@ namespace Pong.Server.hubs
         public async Task GameLoop()
         {
             //search for currently running games in database
-            List<PongGame> pongGames = gd.GetGames();
-            pongGames.Add(new PongGame());
-            pongGames.Add(new PongGame());
-            PongGame pg = new PongGame();
-            pg.GroupName = "12";
+            List<PongGameDB> pongGames = gd.GetGames();
+            PongGameDB pg = new PongGameDB();
+            pg.GameId = "12";
             pongGames.Add(pg);
             await Task.Delay(100);
 
-            foreach (PongGame pongGame in pongGames)
+            foreach (PongGameDB pongGame in pongGames)
             {
-                string group = pongGame.GroupName;
+                string group = pongGame.GameId;
                 if (group == null)
                 {
                     group = "1";
                 }
-                await Clients.Group(group).SendAsync("ReceiveMessage", pongGame);
+                await Clients.Group(group).SendAsync("GameStats", pongGame);
             }
 
             await GameLoop();
+        }
+
+        public async Task GameOver(string group, PongGameDB pongGame)
+        {
+            await Clients.Group(group).SendAsync("GameOver", pongGame);
         }
     }
 }

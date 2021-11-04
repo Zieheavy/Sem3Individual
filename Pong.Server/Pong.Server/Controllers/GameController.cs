@@ -8,6 +8,7 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using DAL;
+using Model;
 
 namespace Pong.Server.Controllers
 {
@@ -23,10 +24,10 @@ namespace Pong.Server.Controllers
             _logger = logger;
         }
 
-        //[HttpGet]
-        public void GetGames()
+        [HttpGet]
+        public List<PongGameDB> GetGames()
         {
-            gd.GetGames();
+            return gd.GetGames();
         }
 
         [HttpPost]
