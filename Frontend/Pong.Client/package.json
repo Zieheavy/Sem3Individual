@@ -1,0 +1,23 @@
+{
+  "name": "vite-project",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "vue": "^3.2.16",
+    "vue-axios": "^3.3.7",
+    "vue-keypress": "^2.1.1",
+    "vue-router": "^3.5.3"
+  },
+  "devDependencies": {
+    "@aspnet/signalr": "^1.0.27",
+    "@vitejs/plugin-vue": "^1.9.3",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "sass": "^1.43.4",
+    "vite": "^2.6.4"
+  }
+}
