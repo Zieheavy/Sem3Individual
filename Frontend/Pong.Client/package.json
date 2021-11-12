@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
+    "uuid": "^8.3.2",
     "vue": "^3.2.16",
     "vue-axios": "^3.3.7",
     "vue-keypress": "^2.1.1",
