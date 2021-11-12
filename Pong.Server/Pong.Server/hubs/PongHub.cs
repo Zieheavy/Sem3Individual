@@ -11,58 +11,45 @@ namespace Pong.Server.hubs
     public class PongHub : Hub
     {
         GameLogic gl = new GameLogic();
-        GameDAL gd = new GameDAL();
 
         bool gameLoopStarted = false;
 
-        public async Task SendMessage(PongGame pongGame)
+        public class PlayerPositions
         {
-            gl.calculateBallPos(pongGame);
-
-            await Clients.All.SendAsync("ReceiveMessage", pongGame);
+            public string GameName { get; set; }
+            public int Position { get; set; }
+            public int PlayerType { get; set; }
         }
 
-        public async Task StartGame()
+        public async Task SendPlayerPosition(PlayerPositions _position)
         {
-            if (!gameLoopStarted)
-            {
-                gameLoopStarted = true;
-                await GameLoop();
-            }
+            PongGame pongGame;
+            if (_position.PlayerType == 1)
+                pongGame = gl.SetPlayerPosition(_position.GameName, _position.Position, -1);
+            else
+                pongGame = gl.SetPlayerPosition(_position.GameName, -1, _position.Position);
+            //gd.UpdatePlayerPosition(pongGame);
+            //;
+            //await Clients.Group(pongGame.GroupName).SendAsync("ReceiveBallPosition", gl.calculateBallPos(gd.GetGame(pongGame)));
+            await Clients.Group(_position.GameName).SendAsync("ReceivePlayerPosition", pongGame);
+        }
+
+        public async Task CalculateBallPos(string gameName)
+        {
+            PongGame pongGame = gl.ReturnGame(gameName);
+            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", pongGame);
         }
 
         public async Task JoingGame(string groupName, int playerType)
         {
-            gd.AddUserToGame(Context.ConnectionId, groupName, playerType);
+            gl.JoinGame(Context.ConnectionId, groupName, playerType);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
         public async Task LeaveGame(string groupName, int playerType)
         {
-            gd.RemoveUserFromGame(Context.ConnectionId, groupName, playerType);
+            //gd.RemoveUserFromGame(Context.ConnectionId, groupName, playerType);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-        }
-
-        public async Task GameLoop()
-        {
-            //search for currently running games in database
-            List<PongGameDB> pongGames = gd.GetGames();
-            PongGameDB pg = new PongGameDB();
-            pg.GameId = "12";
-            pongGames.Add(pg);
-            await Task.Delay(100);
-
-            foreach (PongGameDB pongGame in pongGames)
-            {
-                string group = pongGame.GameId;
-                if (group == null)
-                {
-                    group = "1";
-                }
-                await Clients.Group(group).SendAsync("GameStats", pongGame);
-            }
-
-            await GameLoop();
         }
 
         public async Task GameOver(string group, PongGameDB pongGame)

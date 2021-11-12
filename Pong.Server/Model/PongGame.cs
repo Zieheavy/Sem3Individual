@@ -8,15 +8,19 @@ namespace Model
 {
     public class PongGame
     {
-        public int GameId { get; set; }
+        //Game Variables
+        public bool GameStarted { get; set; }
+        public string GameName { get; set; }
 
+        //Player Variables
+        public string P1Id { get; set; }
+        public string P2Id { get; set; }
         public int P1Pos { get; set; }
         public int P2Pos { get; set; }
+
+        //Ball variables
         public int BalX { get; set; }
         public int BalY { get; set; }
-
-        public bool GameStarted { get; set; }
-        public string GroupName { get; set; }
-
+        public bool BalDirection { get; set; }
     }
 }

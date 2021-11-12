@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using DAL;
 using Model;
+using Logic;
 
 namespace Pong.Server.Controllers
 {
@@ -16,7 +17,7 @@ namespace Pong.Server.Controllers
     [Route("[controller]")]
     public class GameController : ControllerBase
     {
-        private GameDAL gd = new GameDAL();
+        GameLogic gl = new GameLogic();
         private readonly ILogger<GameController> _logger;
 
         public GameController(ILogger<GameController> logger)
@@ -25,15 +26,15 @@ namespace Pong.Server.Controllers
         }
 
         [HttpGet]
-        public List<PongGameDB> GetGames()
+        public List<PongGame> GetGames()
         {
-            return gd.GetGames();
+            return gl.ReturnGames();
         }
 
         [HttpPost]
         public void CreateGame(string gameId)
         {
-            gd.CreateGame(gameId);
+            gl.CreateGame(gameId);
         }
     }
 }
