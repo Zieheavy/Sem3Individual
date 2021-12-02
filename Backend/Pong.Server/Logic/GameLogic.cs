@@ -24,6 +24,13 @@ namespace Logic
 
         public void CreateGame(string _gameName)
         {
+            if (_gameName == "initialUpdateList")
+                return;
+            foreach (PongGame pg in activeGames)
+            {
+                if (pg.GameName == _gameName)
+                    return;
+            }
             //creates a new game
             activeGames.Add(new PongGame()
             {

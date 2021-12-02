@@ -10,9 +10,8 @@ defineProps({
 
 <template>
   <div>
-    <button v-on:click="UnityTest()">Unity Test</button>
     <div v-if="!GameJoined"  class="tempMenu">
-      <label>Game Id </label><input v-model="GameNameInput" type="number" name="id" placeholder="ID">
+      <label>Game Id </label><input v-model="GameNameInput" type="text" name="id" placeholder="ID">
       <button v-on:click="CreateGame()">Create Game</button>
       <button v-on:click="StartGame()">Start Game</button>
       <ul class="gameList">
@@ -177,11 +176,14 @@ data: () => ({
         
         let startedPromise = null
         function start (connection) {
-          startedPromise = connection.start().catch(err => {
+          startedPromise = connection.start().then(
+            () => connection.send("CreateGame", "initialUpdateList")
+            ).catch(err => {
             console.error('Failed to connect with hub', err)
             return new Promise((resolve, reject) => 
               setTimeout(() => start().then(resolve).catch(reject), 1000))
           })
+          
           return startedPromise
         }
         connection.onclose(() => start())
@@ -192,7 +194,14 @@ data: () => ({
         })
         
         connection.on('ReceiveBallPosition', (message) => {
+          console.log("RECEIVE BALL")
           this.receiveBalInformation(message);          
+        })
+
+        connection.on('GameAdded', (message) => {
+          console.log("new game created");
+          console.log(message);
+          this.CreatedGames = message;
         })
 
         start(connection);
@@ -205,16 +214,9 @@ data: () => ({
           }
         });
         if(!exists){
-          axios({
-            method: "POST",
-            url: "http://localhost:5000/Game?gameId="+this.GameNameInput,
-          })
-          .then(response => {
-            this.GetActiveGames();
-          })
-          .catch(error => {
-            console.log(error);
-          });
+          console.log("create " + this.GameNameInput)
+          connection.send("CreateGame", "initialUpdateList")
+          connection.send('CreateGame', this.GameNameInput)
         }
         else{
           alert("Game already exists");
@@ -244,18 +246,6 @@ data: () => ({
             this.StartGame();
           })
       },  
-      GetActiveGames(){
-        axios({
-          method: "GET",
-          url: "http://localhost:5000/Game",
-        })
-        .then(response => {
-          this.CreatedGames = response.data;
-        })
-        .catch(error => {
-          console.log(error)
-        });
-      },
       GetCanvas(){
         this.$nextTick(function () {
           this.canvas = document.getElementById("myCanvas");
@@ -285,7 +275,6 @@ data: () => ({
     },
     beforeMount(){
       this.setCommunication();
-      this.GetActiveGames();
       this.GetCanvas();
     },
     created() {

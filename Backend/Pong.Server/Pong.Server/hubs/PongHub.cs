@@ -40,7 +40,14 @@ namespace Pong.Server.hubs
         public async Task CalculateBallPos(string gameName)
         {
             PongGame pongGame = gl.ReturnGame(gameName);
-            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", pongGame);
+            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", gl.calculateBallPos(pongGame));
+        }
+
+        public async Task CreateGame(string gameName)
+        {
+            gl.CreateGame(gameName);
+            
+            await Clients.All.SendAsync("GameAdded", gl.ReturnGames());
         }
 
         public async Task JoingGame(string groupName, int playerType)

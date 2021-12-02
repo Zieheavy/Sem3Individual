@@ -1,37 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 
-public class SignalRConnection : MonoBehaviour
+public class SignalRController : MonoBehaviour
 {
     public string signalRHubURL = "http://localhost:5000/hubs/pong";
 
     public string SendPlayerPos = "SendPlayerPosition";
 
-    public string statusText = "Awaiting Connection...";
-    public string connectedText = "Connection Started";
-    public string disconnectedText = "Connection Disconnected";
-
     private const string ReceivePlayerPos = "ReceivePlayerPosition";
     private const string ReceiveBalPos = "ReceiveBallPosition";
 
-    private Text uiText;
     private GameRenderer _gameRenderer;
+    private UIController _UIController;
+
+    private SignalR signalR = new SignalR();
 
     void Start()
     {
-        uiText = GameObject.Find("Text").GetComponent<Text>();
         _gameRenderer = gameObject.GetComponent<GameRenderer>();
+        _UIController = gameObject.GetComponent<UIController>();
 
-        //DisplayMessage(statusText);
-
-        var signalR = new SignalR();
         signalR.Init(signalRHubURL);
-
-        //signalR.On("TestReceive", (string payload) =>
-        //{
-        //    var json = JsonUtility.FromJson<JsonPayload>(payload);
-        //});
 
         //checks if playerPositions are received
         signalR.On(ReceivePlayerPos, (ClassLibrary.PongGame payload) =>
@@ -45,23 +36,17 @@ public class SignalRConnection : MonoBehaviour
             _gameRenderer.SetBalPosition(payload);
         });
 
+        signalR.On("GameAdded", (List<ClassLibrary.PongGame> payload) =>
+        {
+            _UIController.UpdateGameList(payload);
+        });
+
         //attempts to make a connection
         signalR.ConnectionStarted += (object sender, ConnectionEventArgs e) =>
         {
             Debug.Log($"Connected: {e.ConnectionId}");
 
-            //    var json1 = new JsonPayload
-            //    {
-            //        message = "Unity Message"
-            //    };
-            //    //signalR.Invoke("TestFuncion", JsonUtility.ToJson(json1));
-            //var json2 = new ClassLibrary.PlayerPositions
-            //{
-            //    GameName = "test",
-            //    Position = 5,
-            //    PlayerType = 1,
-            //};
-            //signalR.Invoke("SendPlayerPosition", (json2));
+            signalR.Invoke("CreateGame", ("initialUpdateList"));
         };
 
         //dislays a debug message when connection lost
@@ -71,5 +56,10 @@ public class SignalRConnection : MonoBehaviour
         };
 
         signalR.Connect();
+    }
+
+    public void JoingGame(string gameName)
+    {
+        signalR.Invoke("JoingGame", gameName, 2);
     }
 }
