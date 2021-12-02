@@ -10,8 +10,15 @@ namespace Logic
 {
     public class GameLogic
     {
-        private bool lastBool;
-        private bool goingLeft = false;
+        private static int balYSpeed = 5; // the speed that the ball travels up and down
+        private static int balXSpeed = 10; // the speed that the ball travels left and right
+        private static int balSize = 12; // the size of the ball itself (ballRadius * 2)
+
+        private static int playerSize = 45; //the height of the player (playerHeight)
+        private static int playerOffset = 12; // the amount that the player is from the border of the canvas (playerwidth + margin)
+
+        private static int canvasHeight = 250; // the height of the canvas 
+        private static int canvasWidth = 500; // the width of the canvas
 
         static List<PongGame> activeGames = new List<PongGame>();
 
@@ -21,7 +28,9 @@ namespace Logic
             activeGames.Add(new PongGame()
             {
                 GameStarted = false,
-                GameName = _gameName
+                GameName = _gameName,
+                BalX = canvasWidth/2 - balSize/2,
+                BalY = canvasHeight/2 - balSize/2
             });
         }
 
@@ -55,7 +64,7 @@ namespace Logic
                 selectedGame.P1Id = _playerId;
             else
                 selectedGame.P2Id = _playerId;
-            
+
         }
 
         public PongGame ReturnGame(string _gameName)
@@ -68,11 +77,95 @@ namespace Logic
             return activeGames;
         }
 
-        public PongGame calculateBallPos(PongGameDB pongGame)
+        public PongGame calculateBallPos(PongGame pongGame)
         {
-            PongGame balPos = new PongGame();
+            bool gameOver = false;
 
-            return balPos;
+            //checks if there are 2 players in the game (pauses game when 1 disconects)
+            if (pongGame.P1Id != null && pongGame.P2Id != null)
+            {
+                //handles the y direction and top and bottom screen collision
+                if(pongGame.BalYDir == 0)
+                {
+                    pongGame.BalY += balYSpeed;
+
+                    //checks if the ball has passed the bottom of the screen
+                    if(pongGame.BalY + balSize >= canvasHeight)
+                    {
+                        //changes the ball direction
+                        pongGame.BalYDir = 1;
+                        //sets the ball directly against the bottom border of the playfield
+                        pongGame.BalY = canvasHeight - balSize;
+                    }
+                }
+                else
+                {
+                    pongGame.BalY -= balYSpeed;
+
+                    //checks if the ball has passed the top of the screen
+                    if (pongGame.BalY <= 0)
+                    {
+                        //changes the ball direction
+                        pongGame.BalYDir = 0;
+                        //sets the ball directly against the bottom border of the playfield
+                        pongGame.BalY = 0;
+                    }
+                }
+
+                //handles the x direction checks player hit detetion can give gameover state
+                if (pongGame.BalXDir == 0) //goign to player 2 (right player)
+                {
+                    pongGame.BalX += balXSpeed;
+
+                    //verticaly inside the player
+                    if (pongGame.BalY >= pongGame.P1Pos && pongGame.BalY - balSize <= pongGame.P1Pos + playerSize)
+                    {
+                        //hits the player
+                        if (pongGame.BalX <= playerOffset) 
+                        {
+                            //sets the ball position directly against the player
+                            pongGame.BalX = playerOffset;
+                            //revers the ball direction
+                            pongGame.BalXDir = 0;
+                        }
+                    }
+                }
+                else //going to player 1 (left player)
+                {
+                    pongGame.BalX -= balXSpeed;
+
+                    //verticaly inside the player
+                    if (pongGame.BalY >= pongGame.P1Pos && pongGame.BalY - balSize <= pongGame.P1Pos + playerSize)
+                    {
+                        //hits the player
+                        if (pongGame.BalX+playerSize >= canvasWidth-playerOffset)
+                        {
+                            //sets the ball position directly against the player
+                            pongGame.BalX = canvasWidth-playerOffset-playerSize;
+                            //revers the ball direction
+                            pongGame.BalXDir = 1;
+                        }
+                    }
+                }
+
+                //gameover alone should be enough the other two statements are insurance
+                if (gameOver || pongGame.BalX < 0 || pongGame.BalX - balSize > canvasWidth)
+                {
+                    //game over
+
+                    //these two if statements are temp
+                    if (pongGame.BalX < 0)
+                    {
+                        pongGame.BalXDir = 0;
+                    }
+                    if(pongGame.BalX - balSize > canvasWidth)
+                    {
+                        pongGame.BalXDir = 1;
+                    }
+                }
+            }
+
+            return pongGame;
         }
     }
 }

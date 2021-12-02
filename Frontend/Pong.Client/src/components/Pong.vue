@@ -10,6 +10,7 @@ defineProps({
 
 <template>
   <div>
+    <button v-on:click="UnityTest()">Unity Test</button>
     <div v-if="!GameJoined"  class="tempMenu">
       <label>Game Id </label><input v-model="GameNameInput" type="number" name="id" placeholder="ID">
       <button v-on:click="CreateGame()">Create Game</button>
@@ -24,7 +25,7 @@ defineProps({
       </ul>
     </div>
     <div v-if="GameJoined" class="gameContainer">
-      <canvas id="myCanvas" width="200" height="100" style="width: 50vw;"></canvas>
+      <canvas id="myCanvas" v-bind:width="canvasWidth" v-bind:height="canvasHeight" style="width: 50vw;"></canvas>
     </div>
 
   </div>
@@ -58,9 +59,13 @@ data: () => ({
       GameJoined: false,
       GameNameInput: 1,
 
-      pHeight: 14,
-      pWidth: 2,
-      bRadius: 2,
+      pHeight: 45,
+      pWidth: 6,
+      pMargin: 6,
+      pSpeed: 4,
+      bRadius: 6,
+      canvasWidth: 500,
+      canvasHeight: 250,
 
       selectedGameId: 12,
       selectedPlayer:1,
@@ -79,10 +84,10 @@ data: () => ({
           ctx.beginPath();
 
           //draw player 1
-          ctx.fillRect(2, gameInfo.p1Pos, this.pWidth, this.pHeight);
+          ctx.fillRect(this.pMargin, gameInfo.p1Pos, this.pWidth, this.pHeight);
 
           //draw player 2
-          ctx.fillRect(this.canvas.width-this.pWidth-2, gameInfo.p2Pos, this.pWidth, this.pHeight);
+          ctx.fillRect(this.canvas.width-this.pWidth-this.pMargin, gameInfo.p2Pos, this.pWidth, this.pHeight);
 
           //draws the ball
           ctx.arc(gameInfo.balX, gameInfo.balY, this.bRadius, 0, 360, false);
@@ -98,10 +103,10 @@ data: () => ({
           //checks if W is pressed
           if(keyCode == 87||keyCode ==119){
             if(this.selectedPlayer == 1){
-              gameInfo.p1Pos--;
+              gameInfo.p1Pos -= this.pSpeed;
             }
             else{
-              gameInfo.p2Pos--;
+              gameInfo.p2Pos -= this.pSpeed;
             }
 
             this.sendCommunication();
@@ -109,10 +114,10 @@ data: () => ({
           //checks if S is pressed
           if(keyCode == 83||keyCode ==115){
             if(this.selectedPlayer == 1){
-              gameInfo.p1Pos++;
+              gameInfo.p1Pos += this.pSpeed;
             }
             else{
-              gameInfo.p2Pos++;
+              gameInfo.p2Pos += this.pSpeed;
             }
 
             this.sendCommunication();
@@ -139,6 +144,10 @@ data: () => ({
         
         connection.send('SendPlayerPosition', PlayerPositions)
       },
+      UnityTest(){
+        console.log("Semd Message");
+        connection.send("TestFuncion", JSON.stringify({message: "Frontend Message"}))
+      },
       receivePlayerInformation(message){
         if(message.gameName == gameInfo.GroupName){
           if(this.selectedPlayer == 1){
@@ -152,7 +161,6 @@ data: () => ({
         }
       },
       receiveBalInformation(message){
-        console.log("receive ball");
         if(message.gameName == gameInfo.GroupName){
           gameInfo.balX = message.balX;
           gameInfo.balY = message.balY;
@@ -179,6 +187,7 @@ data: () => ({
         connection.onclose(() => start())
 
         connection.on('ReceivePlayerPosition', (message) => {
+          console.log("Receive Player Position");
           this.receivePlayerInformation(message);
         })
         
@@ -266,7 +275,7 @@ data: () => ({
             connection.send("CalculateBallPos", _gameName)
 
             myLoop();
-          }, 500)
+          }, 100)
         }
 
         if(this.selectedPlayer == 1){

@@ -28,10 +28,13 @@ namespace Pong.Server.hubs
                 pongGame = gl.SetPlayerPosition(_position.GameName, _position.Position, -1);
             else
                 pongGame = gl.SetPlayerPosition(_position.GameName, -1, _position.Position);
-            //gd.UpdatePlayerPosition(pongGame);
-            //;
-            //await Clients.Group(pongGame.GroupName).SendAsync("ReceiveBallPosition", gl.calculateBallPos(gd.GetGame(pongGame)));
+
             await Clients.Group(_position.GameName).SendAsync("ReceivePlayerPosition", pongGame);
+        }
+
+        public async Task TestFuncion(string message)
+        {
+            await Clients.All.SendAsync("TestReceive", message);
         }
 
         public async Task CalculateBallPos(string gameName)

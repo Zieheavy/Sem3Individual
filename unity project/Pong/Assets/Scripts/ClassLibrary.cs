@@ -1,10 +1,8 @@
-﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
-namespace Model
+public class ClassLibrary : MonoBehaviour
 {
     public class PongGame
     {
@@ -21,7 +19,14 @@ namespace Model
         //Ball variables
         public int BalX { get; set; }
         public int BalY { get; set; }
-        public int BalXDir{ get; set; }
+        public int BalXDir { get; set; }
         public int BalYDir { get; set; }
+    }
+
+    public class PlayerPositions
+    {
+        public string GameName { get; set; }
+        public int Position { get; set; }
+        public int PlayerType { get; set; }
     }
 }
