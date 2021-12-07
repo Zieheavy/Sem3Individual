@@ -12,6 +12,7 @@ namespace DAL
     {
         public void CreateGame(string gameName)
         {
+            // create game in database
             string query = string.Empty;
 
             using (MySqlConnection connection = new MySqlConnection(DalConnection.Conn))
