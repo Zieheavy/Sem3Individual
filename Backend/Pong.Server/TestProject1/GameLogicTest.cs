@@ -8,19 +8,19 @@ namespace TestProject1
 {
     public class GameLogicTest
     {
-        [Theory]
-        [MemberData(nameof(SetPlayerPostion))]
-        public void TestSetPlayerPositon(string gameName, int p1Pos, int p2Pos, PongGame expected)
-        {
-            GameLogic gameLogic = new GameLogic();
-            gameLogic.CreateGame(gameName);
+        //[Theory]
+        //[MemberData(nameof(SetPlayerPostion))]
+        //public void TestSetPlayerPositon(string gameName, int p1Pos, int p2Pos, PongGame expected)
+        //{
+        //    GameLogic gameLogic = new GameLogic();
+        //    gameLogic.CreateGame(gameName);
 
-            PongGame result = gameLogic.SetPlayerPosition(gameName, p1Pos, p2Pos);
+        //    PongGame result = gameLogic.SetPlayerPosition(gameName, p1Pos, p2Pos);
 
-            Assert.Equal(expected.GameName, result.GameName);
-            Assert.Equal(expected.P1Pos, result.P1Pos);
-            Assert.Equal(expected.P2Pos, result.P2Pos);
-        }
+        //    Assert.Equal(expected.GameName, result.GameName);
+        //    Assert.Equal(expected.P1Pos, result.P1Pos);
+        //    Assert.Equal(expected.P2Pos, result.P2Pos);
+        //}
 
         [Theory]
         [MemberData(nameof(CalculateBallPosition))]
