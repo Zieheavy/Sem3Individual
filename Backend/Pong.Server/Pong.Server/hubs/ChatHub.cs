@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Model;
 using Microsoft.AspNetCore.SignalR;
+using Model;
 
 namespace Pong.Server.Hubs
 {

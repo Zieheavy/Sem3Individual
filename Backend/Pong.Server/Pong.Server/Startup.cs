@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,10 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Pong.Server.hubs;
 using Pong.Server.Hubs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Pong.Server
 {
@@ -63,7 +63,6 @@ namespace Pong.Server
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pong.Server v1"));
             }
-
 
             app.UseHttpsRedirection();
             //app.UseCors("ClientPermission");

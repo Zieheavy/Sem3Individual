@@ -1,35 +1,39 @@
-﻿using System.Threading.Tasks;
-using Model;
-using Microsoft.AspNetCore.SignalR;
-using Logic;
-using DAL;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using DAL;
+using Logic;
+using Microsoft.AspNetCore.SignalR;
+using Model;
 
 namespace Pong.Server.hubs
 {
     public class PongHub : Hub
     {
-        GameLogic gl = new GameLogic();
-
-        bool gameLoopStarted = false;
+        private readonly GameLogic _gl = new GameLogic();
 
         public class PlayerPositions
         {
             public string GameName { get; set; }
+
             public int Position { get; set; }
+
             public int PlayerType { get; set; }
         }
 
-        public async Task SendPlayerPosition(PlayerPositions _position)
+        public async Task SendPlayerPosition(PlayerPositions position)
         {
             PongGame pongGame;
-            if (_position.PlayerType == 1)
-                pongGame = gl.SetPlayerPosition(_position.GameName, _position.Position, -1);
+            if (position.PlayerType == 1)
+            {
+                pongGame = _gl.SetPlayerPosition(position.GameName, position.Position, -1);
+            }
             else
-                pongGame = gl.SetPlayerPosition(_position.GameName, -1, _position.Position);
+            {
+                pongGame = _gl.SetPlayerPosition(position.GameName, -1, position.Position);
+            }
 
-            await Clients.Group(_position.GameName).SendAsync("ReceivePlayerPosition", pongGame);
+            await Clients.Group(position.GameName).SendAsync("ReceivePlayerPosition", pongGame);
         }
 
         public async Task TestFuncion(string message)
@@ -39,30 +43,37 @@ namespace Pong.Server.hubs
 
         public async Task CalculateBallPos(string gameName)
         {
-            PongGame pongGame = gl.ReturnGame(gameName);
-            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", gl.calculateBallPos(pongGame));
+            PongGame pongGame = _gl.ReturnGame(gameName);
+            if (pongGame.GameOver)
+            {
+                await Clients.Group(gameName).SendAsync("GameOver", pongGame.p1Score, pongGame.p2Score);
+            }
+
+            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", _gl.calculateBallPos(pongGame));
         }
 
         public async Task CreateGame(string gameName)
         {
-            gl.CreateGame(gameName);
-            
-            await Clients.All.SendAsync("GameAdded", gl.ReturnGames());
+            _gl.CreateGame(gameName);
+
+            await Clients.All.SendAsync("GameAdded", _gl.ReturnGames());
         }
 
         public async Task JoingGame(string groupName, int playerType)
         {
-            gl.JoinGame(Context.ConnectionId, groupName, playerType);
+            _gl.JoinGame(Context.ConnectionId, groupName, playerType);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Clients.All.SendAsync("GameAdded", _gl.ReturnGames());
         }
 
         public async Task LeaveGame(string groupName, int playerType)
         {
             //gd.RemoveUserFromGame(Context.ConnectionId, groupName, playerType);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            await Clients.All.SendAsync("GameAdded", _gl.ReturnGames());
         }
 
-        public async Task GameOver(string group, PongGameDB pongGame)
+        public async Task GameOver(string group, PongScores pongGame)
         {
             await Clients.Group(group).SendAsync("GameOver", pongGame);
         }

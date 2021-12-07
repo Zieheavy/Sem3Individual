@@ -189,19 +189,31 @@ data: () => ({
         connection.onclose(() => start())
 
         connection.on('ReceivePlayerPosition', (message) => {
-          console.log("Receive Player Position");
           this.receivePlayerInformation(message);
         })
         
-        connection.on('ReceiveBallPosition', (message) => {
-          console.log("RECEIVE BALL")
-          this.receiveBalInformation(message);          
-        })
 
         connection.on('GameAdded', (message) => {
           console.log("new game created");
           console.log(message);
           this.CreatedGames = message;
+        })
+        
+        connection.on('ReceiveBallPosition', (message) => {
+          // console.log("p1Pos: " + message.p1Pos + "/" + (message.p1Pos + 45) + " BalPos: " + message.balY + " state: " + (parseInt(message.BalY) >= parseInt(message.P1Pos) ) + "/" + (message.BalY <= (message.P1Pos + 45)) + " ;;" + (24 >= 4))
+          // if(message.BalY >= message.P1Pos && message.BalY <= (message.P1Pos + 45)){
+          //   console.log("Y in player range")
+          //   if (message.BalX - 6 <= 40) {
+          //     console.log("Player HIT")
+          //   }
+          // }
+
+          // console.log("Balx: " + message.balX + " Baly: " + message.balY + " p1: " + message.p1Pos + "/" + (message.p1Pos+45) + " p2: " + message.p2Pos + "/" + (message.p2Pos+45) )
+          this.receiveBalInformation(message);          
+        })
+        
+        connection.on('GameOver', (message) => {
+          console.log("Game Over");
         })
 
         start(connection);
@@ -215,8 +227,8 @@ data: () => ({
         });
         if(!exists){
           console.log("create " + this.GameNameInput)
-          connection.send("CreateGame", "initialUpdateList")
           connection.send('CreateGame', this.GameNameInput)
+          setTimeout(function(){ connection.send("CreateGame", "initialUpdateList"); }, 1000);
         }
         else{
           alert("Game already exists");
@@ -265,7 +277,7 @@ data: () => ({
             connection.send("CalculateBallPos", _gameName)
 
             myLoop();
-          }, 100)
+          }, 200)
         }
 
         if(this.selectedPlayer == 1){

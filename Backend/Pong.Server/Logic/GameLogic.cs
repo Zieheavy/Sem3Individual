@@ -1,58 +1,84 @@
-﻿using DAL;
-using Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DAL;
+using Model;
 
 namespace Logic
 {
     public class GameLogic
     {
-        private static int balYSpeed = 5; // the speed that the ball travels up and down
-        private static int balXSpeed = 10; // the speed that the ball travels left and right
-        private static int balSize = 12; // the size of the ball itself (ballRadius * 2)
+        private static readonly List<PongGame> ActiveGames = new List<PongGame>();
 
-        private static int playerSize = 45; //the height of the player (playerHeight)
-        private static int playerOffset = 12; // the amount that the player is from the border of the canvas (playerwidth + margin)
+        // the speed that the ball travels up and down
+        private static int balYSpeed = 5;
 
-        private static int canvasHeight = 250; // the height of the canvas 
-        private static int canvasWidth = 500; // the width of the canvas
+        // the speed that the ball travels left and right
+        private static int balXSpeed = 10;
 
-        static List<PongGame> activeGames = new List<PongGame>();
+        // the size of the ball itself (ballRadius * 2)
+        private static int balSize = 12;
+        private static int halfBalSize = balSize / 2;
 
-        public void CreateGame(string _gameName)
+        // the height of the player (playerHeight)
+        private static int playerSize = 60;
+
+        // the amount that the player is from the border of the canvas (playerwidth + margin)
+        private static int playerOffset = 15;
+
+        // the height of the canvas
+        private static int canvasHeight = 250;
+
+        // the width of the canvas
+        private static int canvasWidth = 500;
+
+        private GameDAL _gd = new GameDAL();
+
+        public void CreateGame(string gameName)
         {
-            if (_gameName == "initialUpdateList")
-                return;
-            foreach (PongGame pg in activeGames)
+            if (gameName == "initialUpdateList")
             {
-                if (pg.GameName == _gameName)
-                    return;
+                return;
             }
-            //creates a new game
-            activeGames.Add(new PongGame()
+            foreach (PongGame pg in ActiveGames)
+            {
+                if (pg.GameName == gameName)
+                {
+                    return;
+                }
+            }
+
+            // creates a new game
+            ActiveGames.Add(new PongGame()
             {
                 GameStarted = false,
-                GameName = _gameName,
-                BalX = canvasWidth/2 - balSize/2,
-                BalY = canvasHeight/2 - balSize/2
+                GameName = gameName,
+                // BalX = canvasWidth/2 - balSize/2,
+                BalX = (canvasWidth / 2) - halfBalSize,
+                BalY = (canvasHeight / 2) - halfBalSize
             });
+
+            _gd.CreateGame(gameName);
         }
 
-        public PongGame SetPlayerPosition(string _gameName, int _p1Pos, int _p2Pos)
+        public PongGame SetPlayerPosition(string gameName, int p1Pos, int p2Pos)
         {
-            //find the game based on the name of the game
-            PongGame selectedGame = activeGames.Find(g => g.GameName == _gameName);
+            // find the game based on the name of the game
+            PongGame selectedGame = ActiveGames.Find(g => g.GameName == gameName);
 
             if (selectedGame != null)
             {
-                if (_p1Pos > 0)
-                    selectedGame.P1Pos = _p1Pos;
+                if (p1Pos > 0)
+                {
+                    selectedGame.P1Pos = p1Pos;
+                }
 
-                if (_p2Pos > 0)
-                    selectedGame.P2Pos = _p2Pos;
+                if (p2Pos > 0)
+                {
+                    selectedGame.P2Pos = p2Pos;
+                }
             }
             else
             {
@@ -62,113 +88,128 @@ namespace Logic
             return selectedGame;
         }
 
-        public void JoinGame(string _playerId, string _gameName, int _playerType)
+        public void JoinGame(string playerId, string gameName, int playerType)
         {
-            PongGame selectedGame = activeGames.Find(g => g.GameName == _gameName);
+            PongGame selectedGame = ActiveGames.Find(g => g.GameName == gameName);
 
-            //checks if the p
-            if (_playerType == 1)
-                selectedGame.P1Id = _playerId;
+            if (playerType == 1)
+            {
+                selectedGame.P1Id = playerId;
+            }
             else
-                selectedGame.P2Id = _playerId;
-
+            {
+                selectedGame.P2Id = playerId;
+            }
         }
 
-        public PongGame ReturnGame(string _gameName)
+        public PongGame ReturnGame(string gameName)
         {
-            return activeGames.Find(g => g.GameName == _gameName);
+            return ActiveGames.Find(g => g.GameName == gameName);
         }
 
         public List<PongGame> ReturnGames()
         {
-            return activeGames;
+            return ActiveGames;
         }
 
         public PongGame calculateBallPos(PongGame pongGame)
         {
             bool gameOver = false;
 
-            //checks if there are 2 players in the game (pauses game when 1 disconects)
-            if (pongGame.P1Id != null && pongGame.P2Id != null)
+            // checks if there are 2 players in the game (pauses game when 1 disconects)
+            if (pongGame.P1Id != null && pongGame.P2Id != null && !pongGame.GameOver)
             {
-                //handles the y direction and top and bottom screen collision
-                if(pongGame.BalYDir == 0)
+                // handles the y direction and top and bottom screen collision
+                if (pongGame.BalYDir == 0)
                 {
                     pongGame.BalY += balYSpeed;
 
-                    //checks if the ball has passed the bottom of the screen
-                    if(pongGame.BalY + balSize >= canvasHeight)
+                    // checks if the ball has passed the bottom of the screen
+                    if (pongGame.BalY + halfBalSize >= canvasHeight)
                     {
-                        //changes the ball direction
+                        // changes the ball direction
                         pongGame.BalYDir = 1;
-                        //sets the ball directly against the bottom border of the playfield
-                        pongGame.BalY = canvasHeight - balSize;
+                        // sets the ball directly against the bottom border of the playfield
+                        pongGame.BalY = canvasHeight - halfBalSize;
                     }
                 }
                 else
                 {
                     pongGame.BalY -= balYSpeed;
 
-                    //checks if the ball has passed the top of the screen
-                    if (pongGame.BalY <= 0)
+                    // checks if the ball has passed the top of the screen
+                    if (pongGame.BalY <= halfBalSize)
                     {
-                        //changes the ball direction
+                        // changes the ball direction
                         pongGame.BalYDir = 0;
-                        //sets the ball directly against the bottom border of the playfield
-                        pongGame.BalY = 0;
+                        // sets the ball directly against the bottom border of the playfield
+                        pongGame.BalY = halfBalSize;
                     }
                 }
 
-                //handles the x direction checks player hit detetion can give gameover state
-                if (pongGame.BalXDir == 0) //goign to player 2 (right player)
+                // handles the x direction checks player hit detetion can give gameover state
+                // goign to player 2 (right player)
+                if (pongGame.BalXDir == 0)
                 {
                     pongGame.BalX += balXSpeed;
 
-                    //verticaly inside the player
-                    if (pongGame.BalY >= pongGame.P1Pos && pongGame.BalY - balSize <= pongGame.P1Pos + playerSize)
+                    // verticaly inside the player
+                    if (pongGame.BalY >= pongGame.P1Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P1Pos + playerSize)
                     {
-                        //hits the player
-                        if (pongGame.BalX <= playerOffset) 
+                        // hits the player
+                        if (pongGame.BalX + halfBalSize >= canvasWidth - playerOffset)
                         {
-                            //sets the ball position directly against the player
-                            pongGame.BalX = playerOffset;
-                            //revers the ball direction
+                            // revers the ball direction
+                            pongGame.BalXDir = 1;
+                            pongGame.BalX = canvasWidth - playerOffset - balXSpeed;
+                        }
+                    }
+                }
+
+                // going to player 2 (right player)
+                else
+                {
+                    pongGame.BalX -= balXSpeed;
+
+                    // verticaly inside the player
+                    if (pongGame.BalY >= pongGame.P2Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P2Pos + playerSize)
+                    {
+                        // hits the player
+                        if (pongGame.BalX - halfBalSize <= playerOffset)
+                        {
+                            // revers the ball direction
+                            pongGame.BalX = playerOffset + balXSpeed;
                             pongGame.BalXDir = 0;
                         }
                     }
                 }
-                else //going to player 1 (left player)
-                {
-                    pongGame.BalX -= balXSpeed;
 
-                    //verticaly inside the player
-                    if (pongGame.BalY >= pongGame.P1Pos && pongGame.BalY - balSize <= pongGame.P1Pos + playerSize)
-                    {
-                        //hits the player
-                        if (pongGame.BalX+playerSize >= canvasWidth-playerOffset)
-                        {
-                            //sets the ball position directly against the player
-                            pongGame.BalX = canvasWidth-playerOffset-playerSize;
-                            //revers the ball direction
-                            pongGame.BalXDir = 1;
-                        }
-                    }
-                }
-
-                //gameover alone should be enough the other two statements are insurance
+                // gameover alone should be enough the other two statements are debugging
                 if (gameOver || pongGame.BalX < 0 || pongGame.BalX - balSize > canvasWidth)
                 {
-                    //game over
+                    // game over
+                    pongGame.GameOver = true;
 
-                    //these two if statements are temp
-                    if (pongGame.BalX < 0)
+                    // these two if statements are temp
+                    if (pongGame.BalX < -50)
                     {
                         pongGame.BalXDir = 0;
+                        pongGame.p2Score++;
                     }
-                    if(pongGame.BalX - balSize > canvasWidth)
+                    if (pongGame.BalX - balSize > canvasWidth + 50)
                     {
                         pongGame.BalXDir = 1;
+                        pongGame.p1Score++;
                     }
+
+                    // reset
+                    pongGame.BalX = (canvasWidth / 2) - halfBalSize;
+                    pongGame.BalY = (canvasHeight / 2) - halfBalSize;
+                    Random rnd = new Random();
+                    pongGame.BalXDir = rnd.Next(2, 0);
+                    pongGame.BalYDir = rnd.Next(2, 0);
+
+                    _gd.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
                 }
             }
 
