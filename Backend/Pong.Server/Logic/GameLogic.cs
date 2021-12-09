@@ -188,7 +188,16 @@ namespace Logic
                 if (gameOver || pongGame.BalX < 0 || pongGame.BalX - balSize > canvasWidth)
                 {
                     // game over
-                    pongGame.GameOver = true;
+                    //pongGame.GameOver = true;
+
+                    //// reset
+                    //pongGame.BalX = (canvasWidth / 2) - halfBalSize;
+                    //pongGame.BalY = (canvasHeight / 2) - halfBalSize;
+                    //Random rnd = new Random();
+                    //pongGame.BalXDir = rnd.Next(2, 0);
+                    //pongGame.BalYDir = rnd.Next(2, 0);
+
+                    //_gd.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
 
                     // these two if statements are temp
                     if (pongGame.BalX < -50)
@@ -201,15 +210,6 @@ namespace Logic
                         pongGame.BalXDir = 1;
                         pongGame.p1Score++;
                     }
-
-                    // reset
-                    pongGame.BalX = (canvasWidth / 2) - halfBalSize;
-                    pongGame.BalY = (canvasHeight / 2) - halfBalSize;
-                    Random rnd = new Random();
-                    pongGame.BalXDir = rnd.Next(2, 0);
-                    pongGame.BalYDir = rnd.Next(2, 0);
-
-                    _gd.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
                 }
             }
 
