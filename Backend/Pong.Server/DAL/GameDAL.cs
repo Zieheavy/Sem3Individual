@@ -16,9 +16,6 @@ namespace DAL
 
         public static void CreateGame(string gameName)
         {
-            // create game in database
-            string query = string.Empty;
-
             using (MySqlConnection connection = new MySqlConnection(DalConnection.Conn))
             {
                 connection.Open();
@@ -28,8 +25,6 @@ namespace DAL
 
         public static void UpdateScore(string gameName, int p1Score, int p2Score)
         {
-            string query = string.Empty;
-
             using (MySqlConnection connection = new MySqlConnection(DalConnection.Conn))
             {
                 connection.Open();
