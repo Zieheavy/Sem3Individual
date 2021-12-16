@@ -34,7 +34,7 @@ namespace Pong.Server.Controllers
         [HttpPost]
         public void CreateGame(string gameId)
         {
-            _gl.CreateGame(gameId);
+            GameLogic.CreateGame(gameId);
         }
     }
 }

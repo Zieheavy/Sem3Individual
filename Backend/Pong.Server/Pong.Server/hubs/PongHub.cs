@@ -54,7 +54,7 @@ namespace Pong.Server.hubs
 
         public async Task CreateGame(string gameName)
         {
-            _gl.CreateGame(gameName);
+            GameLogic.CreateGame(gameName);
 
             await Clients.All.SendAsync("GameAdded", GameLogic.ReturnGames());
         }
