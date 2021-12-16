@@ -10,6 +10,10 @@ namespace DAL
 {
     public class GameDal
     {
+        protected GameDal()
+        {
+        }
+
         public static void CreateGame(string gameName)
         {
             // create game in database
@@ -18,7 +22,6 @@ namespace DAL
             using (MySqlConnection connection = new MySqlConnection(DalConnection.Conn))
             {
                 connection.Open();
-                MySqlCommand command = new MySqlCommand(query, connection);
                 connection.Close();
             }
         }
@@ -30,7 +33,6 @@ namespace DAL
             using (MySqlConnection connection = new MySqlConnection(DalConnection.Conn))
             {
                 connection.Open();
-                MySqlCommand command = new MySqlCommand(query, connection);
                 connection.Close();
             }
         }

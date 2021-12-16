@@ -126,99 +126,117 @@ namespace Logic
                 // handles the y direction and top and bottom screen collision
                 if (pongGame.BalYDir == 0)
                 {
-                    pongGame.BalY += balYSpeed;
-
-                    // checks if the ball has passed the bottom of the screen
-                    if (pongGame.BalY + halfBalSize >= canvasHeight)
-                    {
-                        // changes the ball direction
-                        pongGame.BalYDir = 1;
-
-                        // sets the ball directly against the bottom border of the playfield
-                        pongGame.BalY = canvasHeight - halfBalSize;
-                    }
+                    ScreenBottomDetection(pongGame);
                 }
                 else
                 {
-                    pongGame.BalY -= balYSpeed;
-
-                    // checks if the ball has passed the top of the screen
-                    if (pongGame.BalY <= halfBalSize)
-                    {
-                        // changes the ball direction
-                        pongGame.BalYDir = 0;
-                        // sets the ball directly against the bottom border of the playfield
-                        pongGame.BalY = halfBalSize;
-                    }
+                    ScreenTopDetection(pongGame);
                 }
 
                 // handles the x direction checks player hit detetion can give gameover state
                 // goign to player 2 (right player)
                 if (pongGame.BalXDir == 0)
                 {
-                    pongGame.BalX += balXSpeed;
-
-                    // verticaly inside the player
-                    if (pongGame.BalY >= pongGame.P1Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P1Pos + playerSize)
-                    {
-                        // hits the player
-                        if (pongGame.BalX + halfBalSize >= canvasWidth - playerOffset)
-                        {
-                            // revers the ball direction
-                            pongGame.BalXDir = 1;
-                            pongGame.BalX = canvasWidth - playerOffset - balXSpeed;
-                        }
-                    }
+                    BallPosP1(pongGame);
                 }
 
-                // going to player 2 (right player)
+                // going to player 1 (Left player)
                 else
                 {
-                    pongGame.BalX -= balXSpeed;
-
-                    // verticaly inside the player
-                    if (pongGame.BalY >= pongGame.P2Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P2Pos + playerSize)
-                    {
-                        // hits the player
-                        if (pongGame.BalX - halfBalSize <= playerOffset)
-                        {
-                            // revers the ball direction
-                            pongGame.BalX = playerOffset + balXSpeed;
-                            pongGame.BalXDir = 0;
-                        }
-                    }
+                    BallPosP2(pongGame);
                 }
 
-                // gameover alone should be enough the other two statements are debugging
-                if (gameOver || pongGame.BalX < 0 || pongGame.BalX - balSize > canvasWidth)
-                {
-                    // game over
-                    pongGame.GameOver = true;
-
-                    //// reset
-                    //pongGame.BalX = (canvasWidth / 2) - halfBalSize;
-                    //pongGame.BalY = (canvasHeight / 2) - halfBalSize;
-                    //Random rnd = new Random();
-                    //pongGame.BalXDir = rnd.Next(2, 0);
-                    //pongGame.BalYDir = rnd.Next(2, 0);
-
-                    GameDal.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
-
-                    // these two if statements are temp
-                    if (pongGame.BalX < -50)
-                    {
-                        pongGame.BalXDir = 0;
-                        pongGame.p2Score++;
-                    }
-                    if (pongGame.BalX - balSize > canvasWidth + 50)
-                    {
-                        pongGame.BalXDir = 1;
-                        pongGame.p1Score++;
-                    }
-                }
+                BallGameOver(pongGame, gameOver);
             }
 
             return pongGame;
+        }
+
+        private static void ScreenTopDetection(PongGame pongGame)
+        {
+            pongGame.BalY -= balYSpeed;
+
+            // checks if the ball has passed the top of the screen
+            if (pongGame.BalY <= halfBalSize)
+            {
+                // changes the ball direction
+                pongGame.BalYDir = 0;
+                // sets the ball directly against the bottom border of the playfield
+                pongGame.BalY = halfBalSize;
+            }
+        }
+
+        private static void ScreenBottomDetection(PongGame pongGame)
+        {
+            pongGame.BalY += balYSpeed;
+
+            // checks if the ball has passed the bottom of the screen
+            if (pongGame.BalY + halfBalSize >= canvasHeight)
+            {
+                // changes the ball direction
+                pongGame.BalYDir = 1;
+
+                // sets the ball directly against the bottom border of the playfield
+                pongGame.BalY = canvasHeight - halfBalSize;
+            }
+        }
+
+        private static void BallPosP1(PongGame pongGame)
+        {
+            pongGame.BalX += balXSpeed;
+
+            // verticaly inside the player
+            if (pongGame.BalY >= pongGame.P1Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P1Pos + playerSize)
+            {
+                // hits the player
+                if (pongGame.BalX + halfBalSize >= canvasWidth - playerOffset)
+                {
+                    // revers the ball direction
+                    pongGame.BalXDir = 1;
+                    pongGame.BalX = canvasWidth - playerOffset - balXSpeed;
+                }
+            }
+        }
+
+        private static void BallPosP2(PongGame pongGame)
+        {
+            pongGame.BalX -= balXSpeed;
+
+            // verticaly inside the player
+            if (pongGame.BalY >= pongGame.P2Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P2Pos + playerSize)
+            {
+                // hits the player
+                if (pongGame.BalX - halfBalSize <= playerOffset)
+                {
+                    // revers the ball direction
+                    pongGame.BalX = playerOffset + balXSpeed;
+                    pongGame.BalXDir = 0;
+                }
+            }
+        }
+
+        private static void BallGameOver(PongGame pongGame, bool gameOver)
+        {
+            // gameover alone should be enough the other two statements are debugging
+            if (gameOver || pongGame.BalX < 0 || pongGame.BalX - balSize > canvasWidth)
+            {
+                // game over
+                pongGame.GameOver = true;
+
+                GameDal.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
+
+                // these two if statements are temp
+                if (pongGame.BalX < -50)
+                {
+                    pongGame.BalXDir = 0;
+                    pongGame.p2Score++;
+                }
+                if (pongGame.BalX - balSize > canvasWidth + 50)
+                {
+                    pongGame.BalXDir = 1;
+                    pongGame.p1Score++;
+                }
+            }
         }
     }
 }
