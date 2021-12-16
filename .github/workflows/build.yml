@@ -9,6 +9,9 @@ jobs:
   build:
     name: Build
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./Backend/Pong.Server
     steps:
       - name: Set up JDK 11
         uses: actions/setup-java@v1
@@ -42,6 +45,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Zieheavy_Sem3Individual\\Backend\\Pong.Server" /o:"zieheavy" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Zieheavy_Sem3Individual" /o:"zieheavy" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Release --no-restore
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
