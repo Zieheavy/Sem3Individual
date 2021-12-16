@@ -34,7 +34,7 @@ namespace Logic
         // the width of the canvas
         private static int canvasWidth = 500;
 
-        public void CreateGame(string gameName)
+        public static void CreateGame(string gameName)
         {
             if (gameName == "initialUpdateList")
             {
@@ -161,6 +161,7 @@ namespace Logic
             {
                 // changes the ball direction
                 pongGame.BalYDir = 0;
+
                 // sets the ball directly against the bottom border of the playfield
                 pongGame.BalY = halfBalSize;
             }
@@ -186,15 +187,14 @@ namespace Logic
             pongGame.BalX += balXSpeed;
 
             // verticaly inside the player
-            if (pongGame.BalY >= pongGame.P1Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P1Pos + playerSize)
+            if (pongGame.BalY >= pongGame.P1Pos - (playerSize / 2) &&
+                pongGame.BalY <= pongGame.P1Pos + playerSize &&
+
+                // revers the ball direction
+                pongGame.BalX + halfBalSize >= canvasWidth - playerOffset)
             {
-                // hits the player
-                if (pongGame.BalX + halfBalSize >= canvasWidth - playerOffset)
-                {
-                    // revers the ball direction
-                    pongGame.BalXDir = 1;
-                    pongGame.BalX = canvasWidth - playerOffset - balXSpeed;
-                }
+                pongGame.BalXDir = 1;
+                pongGame.BalX = canvasWidth - playerOffset - balXSpeed;
             }
         }
 
@@ -203,15 +203,15 @@ namespace Logic
             pongGame.BalX -= balXSpeed;
 
             // verticaly inside the player
-            if (pongGame.BalY >= pongGame.P2Pos - (playerSize / 2) && pongGame.BalY <= pongGame.P2Pos + playerSize)
-            {
+            if (pongGame.BalY >= pongGame.P2Pos - (playerSize / 2) &&
+                pongGame.BalY <= pongGame.P2Pos + playerSize &&
+
                 // hits the player
-                if (pongGame.BalX - halfBalSize <= playerOffset)
-                {
-                    // revers the ball direction
-                    pongGame.BalX = playerOffset + balXSpeed;
-                    pongGame.BalXDir = 0;
-                }
+                pongGame.BalX - halfBalSize <= playerOffset)
+            {
+                // revers the ball direction
+                pongGame.BalX = playerOffset + balXSpeed;
+                pongGame.BalXDir = 0;
             }
         }
 
