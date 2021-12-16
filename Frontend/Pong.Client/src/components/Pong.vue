@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-
 
 defineProps({
   msg: String
@@ -33,10 +31,6 @@ defineProps({
 
 <script>
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr'
-import axios from 'axios'
-
-// setTimeout(function(){}, 3000)
-
 
 const gameInfo = {
     balX: 12,
@@ -175,7 +169,7 @@ data: () => ({
           .build()
         
         let startedPromise = null
-        function start (connection) {
+        function start () {
           startedPromise = connection.start().then(
             () => connection.send("CreateGame", "initialUpdateList")
             ).catch(err => {
@@ -200,15 +194,6 @@ data: () => ({
         })
         
         connection.on('ReceiveBallPosition', (message) => {
-          // console.log("p1Pos: " + message.p1Pos + "/" + (message.p1Pos + 45) + " BalPos: " + message.balY + " state: " + (parseInt(message.BalY) >= parseInt(message.P1Pos) ) + "/" + (message.BalY <= (message.P1Pos + 45)) + " ;;" + (24 >= 4))
-          // if(message.BalY >= message.P1Pos && message.BalY <= (message.P1Pos + 45)){
-          //   console.log("Y in player range")
-          //   if (message.BalX - 6 <= 40) {
-          //     console.log("Player HIT")
-          //   }
-          // }
-
-          // console.log("Balx: " + message.balX + " Baly: " + message.balY + " p1: " + message.p1Pos + "/" + (message.p1Pos+45) + " p2: " + message.p2Pos + "/" + (message.p2Pos+45) )
           this.receiveBalInformation(message);          
         })
         
@@ -294,7 +279,7 @@ data: () => ({
       window.addEventListener('keypress', this.handleGlobalKeyDown);
     },
     beforeDestroy() {
-      // this.LeaveGame();
+      this.LeaveGame();
       window.removeEventListener('keypress', this.handleGlobalKeyDown);
       window.removeEventListener("onbeforeunload", this.LeaveGame);
     }

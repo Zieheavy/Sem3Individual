@@ -5,10 +5,7 @@ import Pong from './components/Pong.vue'
 </script>
 
 <template>
-  <!-- <HelloWorld msg="Hello Vue 3 + Vite" /> -->
   <div>
-    <!-- <router-link to="/HelloWorld">Go to About</router-link>
-    <router-view></router-view> -->
     <Pong msg="Hello Vue 3 + Vite" />
   </div>
 </template>
