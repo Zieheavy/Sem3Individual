@@ -201,7 +201,7 @@ data: () => ({
           console.log("Game Over");
         })
 
-        start(connection);
+        start();
       },
       CreateGame(){
         var exists = false;
