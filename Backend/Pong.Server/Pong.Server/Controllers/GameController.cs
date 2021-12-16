@@ -28,7 +28,7 @@ namespace Pong.Server.Controllers
         [HttpGet]
         public List<PongGame> GetGames()
         {
-            return _gl.ReturnGames();
+            return GameLogic.ReturnGames();
         }
 
         [HttpPost]

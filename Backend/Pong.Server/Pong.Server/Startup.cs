@@ -35,13 +35,6 @@ namespace Pong.Server
 
             services.AddCors(options =>
             {
-                //options.AddPolicy("ClientPermission", policy =>
-                //{
-                //    policy.AllowAnyHeader()
-                //        .AllowAnyMethod()
-                //        .WithOrigins("http://localhost:3000")
-                //        .AllowCredentials();
-                //});
                 options.AddPolicy("CorsPolicy", builder => builder
                         .WithOrigins("http://localhost:3000")
                         .WithOrigins("http://localhost:3005")
@@ -65,7 +58,6 @@ namespace Pong.Server
             }
 
             app.UseHttpsRedirection();
-            //app.UseCors("ClientPermission");
             app.UseCors("CorsPolicy");
             app.UseRouting();
 

@@ -8,9 +8,9 @@ using MySql.Data.MySqlClient;
 
 namespace DAL
 {
-    public class GameDAL
+    public class GameDal
     {
-        public void CreateGame(string gameName)
+        public static void CreateGame(string gameName)
         {
             // create game in database
             string query = string.Empty;
@@ -19,22 +19,11 @@ namespace DAL
             {
                 connection.Open();
                 MySqlCommand command = new MySqlCommand(query, connection);
-                MySqlDataReader reader = command.ExecuteReader();
-                try
-                {
-                }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    connection.Close();
-                }
+                connection.Close();
             }
         }
 
-        public void UpdateScore(string gameName, int p1Score, int p2Score)
+        public static void UpdateScore(string gameName, int p1Score, int p2Score)
         {
             string query = string.Empty;
 
@@ -42,20 +31,7 @@ namespace DAL
             {
                 connection.Open();
                 MySqlCommand command = new MySqlCommand(query, connection);
-                //command.Parameters.Add(new MySqlParameter("@gameId", gameName));
-                //command.Parameters.Add(new MySqlParameter("@creationDate", DateTime.Now));
-                MySqlDataReader reader = command.ExecuteReader();
-                try
-                {
-                }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    connection.Close();
-                }
+                connection.Close();
             }
         }
     }
