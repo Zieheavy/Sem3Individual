@@ -20,7 +20,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - uses: actions/setup-node@v1
       - run: npm i
       - run: npm run build --if-present
