@@ -26,11 +26,11 @@ namespace Pong.Server.hubs
             PongGame pongGame;
             if (position.PlayerType == 1)
             {
-                pongGame = _gl.SetPlayerPosition(position.GameName, position.Position, -1);
+                pongGame = GameLogic.SetPlayerPosition(position.GameName, position.Position, -1);
             }
             else
             {
-                pongGame = _gl.SetPlayerPosition(position.GameName, -1, position.Position);
+                pongGame = GameLogic.SetPlayerPosition(position.GameName, -1, position.Position);
             }
 
             await Clients.Group(position.GameName).SendAsync("ReceivePlayerPosition", pongGame);
@@ -43,34 +43,34 @@ namespace Pong.Server.hubs
 
         public async Task CalculateBallPos(string gameName)
         {
-            PongGame pongGame = _gl.ReturnGame(gameName);
+            PongGame pongGame = GameLogic.ReturnGame(gameName);
             if (pongGame.GameOver)
             {
                 await Clients.Group(gameName).SendAsync("GameOver", pongGame.p1Score, pongGame.p2Score);
             }
 
-            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", _gl.calculateBallPos(pongGame));
+            await Clients.Group(gameName).SendAsync("ReceiveBallPosition", GameLogic.calculateBallPos(pongGame));
         }
 
         public async Task CreateGame(string gameName)
         {
             _gl.CreateGame(gameName);
 
-            await Clients.All.SendAsync("GameAdded", _gl.ReturnGames());
+            await Clients.All.SendAsync("GameAdded", GameLogic.ReturnGames());
         }
 
         public async Task JoingGame(string groupName, int playerType)
         {
-            _gl.JoinGame(Context.ConnectionId, groupName, playerType);
+            GameLogic.JoinGame(Context.ConnectionId, groupName, playerType);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.All.SendAsync("GameAdded", _gl.ReturnGames());
+            await Clients.All.SendAsync("GameAdded", GameLogic.ReturnGames());
         }
 
         public async Task LeaveGame(string groupName, int playerType)
         {
-            //gd.RemoveUserFromGame(Context.ConnectionId, groupName, playerType);
+            GameLogic.RemoveUserFromGame(Context.ConnectionId, groupName, playerType);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            await Clients.All.SendAsync("GameAdded", _gl.ReturnGames());
+            await Clients.All.SendAsync("GameAdded", GameLogic.ReturnGames());
         }
 
         public async Task GameOver(string group, PongScores pongGame)

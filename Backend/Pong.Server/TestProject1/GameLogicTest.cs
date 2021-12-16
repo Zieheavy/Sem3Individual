@@ -8,27 +8,11 @@ namespace TestProject1
 {
     public class GameLogicTest
     {
-        //[Theory]
-        //[MemberData(nameof(SetPlayerPostion))]
-        //public void TestSetPlayerPositon(string gameName, int p1Pos, int p2Pos, PongGame expected)
-        //{
-        //    GameLogic gameLogic = new GameLogic();
-        //    gameLogic.CreateGame(gameName);
-
-        //    PongGame result = gameLogic.SetPlayerPosition(gameName, p1Pos, p2Pos);
-
-        //    Assert.Equal(expected.GameName, result.GameName);
-        //    Assert.Equal(expected.P1Pos, result.P1Pos);
-        //    Assert.Equal(expected.P2Pos, result.P2Pos);
-        //}
-
         [Theory]
         [MemberData(nameof(CalculateBallPosition))]
         public void TestCalculateBallPosition(PongGame pongGame, PongGame expected)
         {
-            GameLogic gameLogic = new GameLogic();
-
-            PongGame result = gameLogic.calculateBallPos(pongGame);
+            PongGame result = GameLogic.calculateBallPos(pongGame);
 
             Assert.Equal(expected.GameStarted, result.GameStarted);
             Assert.Equal(expected.GameName, result.GameName);
@@ -85,7 +69,7 @@ namespace TestProject1
         {
             return new List<object[]>
             {
-                //bal change position test
+                // bal change position test
                 new object[]
                 {
                     new PongGame
@@ -115,7 +99,8 @@ namespace TestProject1
                         BalYDir = 1,
                     }
                 },
-                //ball hit player 2 test
+
+                // ball hit player 2 test
                 new object[]
                 {
                     new PongGame
@@ -145,7 +130,8 @@ namespace TestProject1
                         BalYDir = 0,
                     },
                 },
-                //ball hit player 1 test
+
+                // ball hit player 1 test
                 new object[]
                 {
                     new PongGame
@@ -175,6 +161,7 @@ namespace TestProject1
                         BalYDir = 0,
                     },
                 }
+
                 // game over test
             };
         }

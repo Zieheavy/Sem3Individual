@@ -34,8 +34,6 @@ namespace Logic
         // the width of the canvas
         private static int canvasWidth = 500;
 
-        private GameDAL _gd = new GameDAL();
-
         public void CreateGame(string gameName)
         {
             if (gameName == "initialUpdateList")
@@ -55,15 +53,16 @@ namespace Logic
             {
                 GameStarted = false,
                 GameName = gameName,
+
                 // BalX = canvasWidth/2 - balSize/2,
                 BalX = (canvasWidth / 2) - halfBalSize,
                 BalY = (canvasHeight / 2) - halfBalSize
             });
 
-            _gd.CreateGame(gameName);
+            GameDal.CreateGame(gameName);
         }
 
-        public PongGame SetPlayerPosition(string gameName, int p1Pos, int p2Pos)
+        public static PongGame SetPlayerPosition(string gameName, int p1Pos, int p2Pos)
         {
             // find the game based on the name of the game
             PongGame selectedGame = ActiveGames.Find(g => g.GameName == gameName);
@@ -88,7 +87,12 @@ namespace Logic
             return selectedGame;
         }
 
-        public void JoinGame(string playerId, string gameName, int playerType)
+        public static void RemoveUserFromGame(string connectionId, string groupName, int playerType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void JoinGame(string playerId, string gameName, int playerType)
         {
             PongGame selectedGame = ActiveGames.Find(g => g.GameName == gameName);
 
@@ -102,17 +106,17 @@ namespace Logic
             }
         }
 
-        public PongGame ReturnGame(string gameName)
+        public static PongGame ReturnGame(string gameName)
         {
             return ActiveGames.Find(g => g.GameName == gameName);
         }
 
-        public List<PongGame> ReturnGames()
+        public static List<PongGame> ReturnGames()
         {
             return ActiveGames;
         }
 
-        public PongGame calculateBallPos(PongGame pongGame)
+        public static PongGame calculateBallPos(PongGame pongGame)
         {
             bool gameOver = false;
 
@@ -129,6 +133,7 @@ namespace Logic
                     {
                         // changes the ball direction
                         pongGame.BalYDir = 1;
+
                         // sets the ball directly against the bottom border of the playfield
                         pongGame.BalY = canvasHeight - halfBalSize;
                     }
@@ -188,7 +193,7 @@ namespace Logic
                 if (gameOver || pongGame.BalX < 0 || pongGame.BalX - balSize > canvasWidth)
                 {
                     // game over
-                    //pongGame.GameOver = true;
+                    pongGame.GameOver = true;
 
                     //// reset
                     //pongGame.BalX = (canvasWidth / 2) - halfBalSize;
@@ -197,7 +202,7 @@ namespace Logic
                     //pongGame.BalXDir = rnd.Next(2, 0);
                     //pongGame.BalYDir = rnd.Next(2, 0);
 
-                    //_gd.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
+                    GameDal.UpdateScore(pongGame.GameName, pongGame.p1Score, pongGame.p2Score);
 
                     // these two if statements are temp
                     if (pongGame.BalX < -50)
